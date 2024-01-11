@@ -1,33 +1,25 @@
-import { getCategories } from '#/app/api/categories/getCategories';
+import { getCategories, getCategory } from '#/app/api/categories/getCategories';
 import { ClickCounter } from '#/ui/click-counter';
 import { TabGroup } from '#/ui/tab-group';
-import React from 'react';
-
-const title = 'Nested Layouts';
-
-export const metadata = {
-  title,
-  openGraph: {
-    title,
-    images: [`/api/og?title=${title}`],
-  },
-};
 
 export default async function Layout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: { categorySlug: string };
 }) {
-  const categories = await getCategories();
+  const category = await getCategory({ slug: params.categorySlug });
+  const categories = await getCategories({ parent: params.categorySlug });
 
   return (
     <div className="space-y-9">
       <div className="flex justify-between">
         <TabGroup
-          path="/layouts"
+          path={`/${category.slug}`}
           items={[
             {
-              text: 'Home',
+              text: 'All',
             },
             ...categories.map((x) => ({
               text: x.name,
